@@ -59,7 +59,13 @@
 		 )
 		))
 	)
+  (add-hook 'kill-emacs-hook #'devcontainer-down)
   (message devcontainer-container-id)
+  )
+
+(defun devcontainer-down ()
+  "Stop the devcontainer in this workspace. Auto-registered as a hook on kill-emacs-hook"
+  (shell-command-to-string (format "docker stop %s" devcontainer-container-id))
   )
 
 (defun devcontainer-current-container-id ()
