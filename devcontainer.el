@@ -55,7 +55,7 @@
   (setq devcontainer-container-id
 	(cdr (assoc 'containerId
 		(json-read-from-string
-		 (shell-command-to-string "echo -n '{\"outcome\":\"success\",\"containerId\":\"c5fece2b9a3564cc47fab8fa668656121ccccb0aa5970fda4308db130f8d7ca2\",\"remoteUser\":\"root\",\"remoteWorkspaceFolder\":\"/workspaces/resume\"}'")
+		 (shell-command-to-string "devcontainer up --workspace-folder . 2> /dev/null")
 		 )
 		))
 	)
