@@ -43,8 +43,7 @@
   "Show the prioritized devcontainer file"
   (interactive)
   "Show which configuration file is being used."
-  (shell-command "pwd")
-  (shell-command "devcontainer read-configuration --workspace-folder .|jq")
+  (shell-command "devcontainer read-configuration --workspace-folder .")
   ;;  (message ".devcontainer/devcontainer.json")
   )
 
