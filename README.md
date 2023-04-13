@@ -3,20 +3,6 @@
 A wrapper around [DevContainers](https//containers.dev). Currently just wraps the
 literal CLI tool.
 
-For a first go, we assume that you've _manually_ configured (e.g. in `.devcontainer/devcontainer.json`)
-your devcontainer to have the official sshd feature installed and port 2222 exposed.
-
-```json
-{
-  "features": {
-    "ghcr.io/devcontainers/features/sshd:1": {}
-  },
-  "appPort": [
-    2222
-  ]
-}
-```
-
 Depends on:
 
 - `devcontainer` in PATH
@@ -26,3 +12,4 @@ Depends on:
 - Emacs packages:
   - shell
   - json
+  - docker-tramp

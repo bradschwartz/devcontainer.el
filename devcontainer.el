@@ -31,6 +31,7 @@
 ;;(require 'docker-tramp)
 (require 'shell)
 (require 'json)
+(require 'docker-tramp)
 
 (defgroup devcontainer nil
   "DevContainer integration for Emacs"
@@ -69,6 +70,16 @@
   (if (boundp 'devcontainer-container-id)
       (message devcontainer-container-id)
     (message "No devcontainer started"))
+  )
+
+(defun devcontainer-open ()
+  "Opens the remote workspace over TRAMP"
+  (interactive)
+  (unless (boundp 'devcontainer-container-id) ( devcontainer-up))
+  ;; /docker:${containerId}:${remoteworkspacefolder}
+  (find-file (format "/docker:%s:%s"
+		     devcontainer-container-id
+		     (cdr (assoc 'remoteWorkspaceFolder devcontainer-container-up-stdout))))
   )
 
 (provide 'devcontainer)
