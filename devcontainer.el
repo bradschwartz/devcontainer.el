@@ -5,6 +5,7 @@
 ;; Author: Brad Schwartz <baschwartz95@gmail.com>
 ;; Keywords: devcontainer docker 
 ;; Version: 0.0.1
+;; Package-Requires: ((shell) (json) (docker-tramp))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
