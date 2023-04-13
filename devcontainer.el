@@ -44,20 +44,16 @@
   (interactive)
   "Show which configuration file is being used."
   (shell-command "devcontainer read-configuration --workspace-folder .")
-  ;;  (message ".devcontainer/devcontainer.json")
   )
 
 (defun devcontainer-up ()
   "Start the devcontainer in this workspace"
   (interactive)
-  ;; TODO: devcontainer up --workspace-folder .
-  (setq devcontainer-container-id
-	(cdr (assoc 'containerId
-		(json-read-from-string
-		 (shell-command-to-string "devcontainer up --workspace-folder . 2> /dev/null")
-		 )
-		))
+  (setq devcontainer-container-up-stdout
+	(json-read-from-string
+	 (shell-command-to-string "devcontainer up --workspace-folder . 2> /dev/null"))
 	)
+  (setq devcontainer-container-id (cdr (assoc 'containerId devcontainer-container-up-stdout)))
   (add-hook 'kill-emacs-hook #'devcontainer-down)
   (message devcontainer-container-id)
   )
