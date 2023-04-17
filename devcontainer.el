@@ -81,6 +81,7 @@
   (find-file (format "/docker:%s:%s"
 		     devcontainer-container-id
 		     (cdr (assoc 'remoteWorkspaceFolder devcontainer-container-up-stdout))))
+  (add-hook 'kill-emacs-hook #'tramp-cleanup-all-buffers)
   )
 
 (provide 'devcontainer)
