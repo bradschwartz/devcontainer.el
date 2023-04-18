@@ -72,8 +72,8 @@
   (remove-hook 'dired-before-readin-hook #'devcontainer-dir-open-hook) ;; prevent infinite recursion when loading new dir!
   ;; /docker:${containerId}:${remoteworkspacefolder}
   (find-alternate-file (format "/docker:%s:%s"
-		     devcontainer-container-id
-		     (cdr (assoc 'remoteWorkspaceFolder devcontainer-container-up-stdout))))
+			       devcontainer-container-id
+			       (cdr (assoc 'remoteWorkspaceFolder devcontainer-container-up-stdout))))
   (add-hook 'kill-emacs-hook #'tramp-cleanup-all-buffers)
   )
 
@@ -89,8 +89,9 @@
 
 (defun devcontainer-dir-open-hook ()
   (when (and (devcontainer-is-valid-dir)
-	   (y-or-n-p "Folder contains a Dev Container configuration file. Reopen folder to develop in a container?"))
-      (devcontainer-open))
+	     (y-or-n-p "Folder contains a Dev Container configuration file. Reopen folder to develop in a container?"))
+    (devcontainer-open)
+    (setq dired-kill-when-opening-new-dired-buffer t))
   )
 
 (provide 'devcontainer)
