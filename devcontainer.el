@@ -29,7 +29,6 @@
 
 ;;; Code:
 
-;;(require 'docker-tramp)
 (require 'shell)
 (require 'json)
 (require 'docker-tramp)
@@ -40,13 +39,6 @@
   :group 'applications
   :link "https://github.com/bradschwartz/devcontainer.el"
   :link '(emacs-commentary-link :tag "Commentary" "devcontainer"))
-
-(defun devcontainer-show-config ()
-  "Show the prioritized devcontainer file"
-  (interactive)
-  "Show which configuration file is being used."
-  (shell-command "devcontainer read-configuration --workspace-folder .")
-  )
 
 (defun devcontainer-up ()
   "Start the devcontainer in this workspace"
@@ -77,11 +69,28 @@
   "Opens the remote workspace over TRAMP"
   (interactive)
   (unless (boundp 'devcontainer-container-id) ( devcontainer-up))
+  (remove-hook 'dired-before-readin-hook #'devcontainer-dir-open-hook) ;; prevent infinite recursion when loading new dir!
   ;; /docker:${containerId}:${remoteworkspacefolder}
-  (find-file (format "/docker:%s:%s"
+  (find-alternate-file (format "/docker:%s:%s"
 		     devcontainer-container-id
 		     (cdr (assoc 'remoteWorkspaceFolder devcontainer-container-up-stdout))))
   (add-hook 'kill-emacs-hook #'tramp-cleanup-all-buffers)
+  )
+
+;; We need to validate that a directory is even able to use devcontainers
+;; Will just check that one ofthe  main 2 files per spec exist
+;; https://containers.dev/implementors/spec/#devcontainerjson
+(defun devcontainer-is-valid-dir ()
+  "Returns bool if this is a valid devcontainer directory"
+  (or
+   (file-exists-p ".devcontainer/devcontainer.json")
+   (file-exists-p ".devcontainer.json"))
+  )
+
+(defun devcontainer-dir-open-hook ()
+  (when (and (devcontainer-is-valid-dir)
+	   (y-or-n-p "Folder contains a Dev Container configuration file. Reopen folder to develop in a container?"))
+      (devcontainer-open))
   )
 
 (provide 'devcontainer)
