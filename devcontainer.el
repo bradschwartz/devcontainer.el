@@ -88,8 +88,10 @@
   )
 
 (defun devcontainer-dir-open-hook ()
-  (when (and (devcontainer-is-valid-dir)
-	     (y-or-n-p "Folder contains a Dev Container configuration file. Reopen folder to develop in a container?"))
+  (when (and
+	 (not (boundp 'server-buffer-clients)) ;; due to bug, skip devcontainer usage when using emacsclient/server mode
+	 (devcontainer-is-valid-dir)
+	 (y-or-n-p "Folder contains a Dev Container configuration file. Reopen folder to develop in a container?"))
     (devcontainer-open)
     (setq dired-kill-when-opening-new-dired-buffer t))
   )
