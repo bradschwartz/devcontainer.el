@@ -3,9 +3,10 @@
 ;; Copyright (C) 2023 Brad Schwartz
 
 ;; Author: Brad Schwartz <baschwartz95@gmail.com>
-;; Keywords: devcontainer docker 
+;; Keywords: devcontainer docker
 ;; Version: 0.0.1
-;; Package-Requires: ((shell) (json) (docker-tramp))
+;; Homepage: https://github.com/bradschwartz/devcontainer.el
+;; Package-Requires: ((emacs "24.1") (shell) (json) (docker-tramp))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -34,14 +35,14 @@
 (require 'docker-tramp)
 
 (defgroup devcontainer nil
-  "DevContainer integration for Emacs"
+  "DevContainer integration for Emacs."
   :prefix "devcontainer-"
   :group 'applications
   :link "https://github.com/bradschwartz/devcontainer.el"
   :link '(emacs-commentary-link :tag "Commentary" "devcontainer"))
 
 (defun devcontainer-up ()
-  "Start the devcontainer in this workspace"
+  "Start the devcontainer in this workspace."
   (interactive)
   (setq devcontainer-container-up-stdout
 	(json-read-from-string
@@ -53,12 +54,12 @@
   )
 
 (defun devcontainer-down ()
-  "Stop the devcontainer in this workspace. Auto-registered as a hook on kill-emacs-hook"
+  "Stop the devcontainer in this workspace. Auto-registered as a hook on \"kill-emacs-hook\"."
   (shell-command-to-string (format "docker stop %s" devcontainer-container-id))
   )
 
 (defun devcontainer-current-container-id ()
-  "If a devcontainer is running, print the container ID"
+  "If a devcontainer is running, print the container ID."
   (interactive)
   (if (boundp 'devcontainer-container-id)
       (message devcontainer-container-id)
@@ -66,7 +67,7 @@
   )
 
 (defun devcontainer-open ()
-  "Opens the remote workspace over TRAMP"
+  "Opens the remote workspace over TRAMP."
   (interactive)
   (unless (boundp 'devcontainer-container-id) ( devcontainer-up))
   (remove-hook 'dired-before-readin-hook #'devcontainer-dir-open-hook) ;; prevent infinite recursion when loading new dir!
@@ -81,13 +82,14 @@
 ;; Will just check that one ofthe  main 2 files per spec exist
 ;; https://containers.dev/implementors/spec/#devcontainerjson
 (defun devcontainer-is-valid-dir ()
-  "Returns bool if this is a valid devcontainer directory"
+  "Vaalidates that PWD is devcontainer directory. Spec files listed: https://containers.dev/implementors/spec/#devcontainerjson."
   (or
    (file-exists-p ".devcontainer/devcontainer.json")
    (file-exists-p ".devcontainer.json"))
   )
 
 (defun devcontainer-dir-open-hook ()
+  "Entrypoint to package, handles validating is devcontainer directory and prompting for approval."
   (when (and (devcontainer-is-valid-dir)
 	     (y-or-n-p "Folder contains a Dev Container configuration file. Reopen folder to develop in a container?"))
     (devcontainer-open)
