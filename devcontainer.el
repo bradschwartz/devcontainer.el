@@ -3,10 +3,10 @@
 ;; Copyright (C) 2023 Brad Schwartz
 
 ;; Author: Brad Schwartz <baschwartz95@gmail.com>
-;; Keywords: devcontainer docker
+;; Keywords: devcontainer docker convenience
 ;; Version: 0.0.1
 ;; Homepage: https://github.com/bradschwartz/devcontainer.el
-;; Package-Requires: ((emacs "24.1") (shell) (json) (docker-tramp))
+;; Package-Requires: ((emacs "24.1") (docker-tramp "0.1.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -30,8 +30,6 @@
 
 ;;; Code:
 
-(require 'shell)
-(require 'json)
 (require 'docker-tramp)
 
 (defgroup devcontainer nil
@@ -46,25 +44,21 @@
   (interactive)
   (setq devcontainer-container-up-stdout
 	(json-read-from-string
-	 (shell-command-to-string "devcontainer up --workspace-folder . 2> /dev/null"))
-	)
+	 (shell-command-to-string "devcontainer up --workspace-folder . 2> /dev/null")))
   (setq devcontainer-container-id (cdr (assoc 'containerId devcontainer-container-up-stdout)))
   (add-hook 'kill-emacs-hook #'devcontainer-down)
-  (message devcontainer-container-id)
-  )
+  (message devcontainer-container-id))
 
 (defun devcontainer-down ()
   "Stop the devcontainer in this workspace. Auto-registered as a hook on \"kill-emacs-hook\"."
-  (shell-command-to-string (format "docker stop %s" devcontainer-container-id))
-  )
+  (shell-command-to-string (format "docker stop %s" devcontainer-container-id)))
 
 (defun devcontainer-current-container-id ()
   "If a devcontainer is running, print the container ID."
   (interactive)
   (if (boundp 'devcontainer-container-id)
       (message devcontainer-container-id)
-    (message "No devcontainer started"))
-  )
+    (message "No devcontainer started")))
 
 (defun devcontainer-open ()
   "Opens the remote workspace over TRAMP."
@@ -75,8 +69,7 @@
   (find-alternate-file (format "/docker:%s:%s"
 			       devcontainer-container-id
 			       (cdr (assoc 'remoteWorkspaceFolder devcontainer-container-up-stdout))))
-  (add-hook 'kill-emacs-hook #'tramp-cleanup-all-buffers)
-  )
+  (add-hook 'kill-emacs-hook #'tramp-cleanup-all-buffers))
 
 ;; We need to validate that a directory is even able to use devcontainers
 ;; Will just check that one ofthe  main 2 files per spec exist
@@ -85,16 +78,14 @@
   "Vaalidates that PWD is devcontainer directory. Spec files listed: https://containers.dev/implementors/spec/#devcontainerjson."
   (or
    (file-exists-p ".devcontainer/devcontainer.json")
-   (file-exists-p ".devcontainer.json"))
-  )
+   (file-exists-p ".devcontainer.json")))
 
 (defun devcontainer-dir-open-hook ()
   "Entrypoint to package, handles validating is devcontainer directory and prompting for approval."
   (when (and (devcontainer-is-valid-dir)
 	     (y-or-n-p "Folder contains a Dev Container configuration file. Reopen folder to develop in a container?"))
     (devcontainer-open)
-    (setq dired-kill-when-opening-new-dired-buffer t))
-  )
+    (setq dired-kill-when-opening-new-dired-buffer t)))
 
 (provide 'devcontainer)
 
