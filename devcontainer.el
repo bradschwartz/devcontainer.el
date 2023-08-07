@@ -6,7 +6,7 @@
 ;; Keywords: devcontainer docker convenience
 ;; Version: 0.0.1
 ;; Homepage: https://github.com/bradschwartz/devcontainer.el
-;; Package-Requires: ((emacs "24.1") (docker-tramp "0.1.1"))
+;; Package-Requires: ((emacs "29"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -29,8 +29,6 @@
 ;; docker daemon is running is left to you.
 
 ;;; Code:
-
-(require 'docker-tramp)
 
 (defgroup devcontainer nil
   "DevContainer integration for Emacs."
