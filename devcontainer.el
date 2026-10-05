@@ -37,9 +37,16 @@
   :link "https://github.com/bradschwartz/devcontainer.el"
   :link '(emacs-commentary-link :tag "Commentary" "devcontainer"))
 
+(defun devcontainer-check-clis-available ()
+  "Signal an error unless the CLIs `docker' and `devcontainer' are on `exec-path'."
+  (dolist (command '("docker" "devcontainer"))
+    (unless (executable-find command)
+      (user-error "`%s' not found in PATH. See the Dependencies section of the README." command))))
+
 (defun devcontainer-up ()
   "Start the devcontainer in this workspace."
   (interactive)
+  (devcontainer-check-clis-available)
   (setq devcontainer-container-up-stdout
 	(json-read-from-string
 	 (shell-command-to-string "devcontainer up --workspace-folder . 2> /dev/null")))
